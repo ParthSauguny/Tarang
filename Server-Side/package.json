@@ -1,0 +1,11 @@
+{
+  "name": "server-side",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm index"
+  },
+  "author": "ParthSauguny",
+  "license": "ISC",
+  "description": ""
+}
