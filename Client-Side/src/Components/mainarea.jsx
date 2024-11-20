@@ -79,8 +79,8 @@ function Mainarea() {
         >
           ➢
         </button>
-        <p>{error}</p>
       </div>
+      <h1 className='text-red-800 text-center'>{error} !</h1>
     </div>
   );
 }
