@@ -2,7 +2,10 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const PORT = process.env.PORT || 5000;
+const mongo = require('mongoose');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+
+mongo.connect(process.env.db_Url , () => console.log("connected at" , PORT));
 
 const app = express();
 app.use(cors());

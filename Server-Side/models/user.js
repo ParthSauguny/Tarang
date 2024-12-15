@@ -3,6 +3,22 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
+const chatMessageSchema = new Schema({
+    sender: {
+      type: String,
+      required: true,
+      enum: [userSchema.username, 'Tarang'], // Define if the sender is the user or the bot
+    },
+    message: {
+      type: String,
+      required: true,
+    },
+    timestamp: {
+      type: Date,
+      default: Date.now,
+    },
+  });
+
 const userSchema = new Schema({
     username: {
         type: String,
@@ -18,8 +34,8 @@ const userSchema = new Schema({
         required: true,
     },
     chatHistory: {
-        type: Object,
-        default: {}
+        type: [chatMessageSchema],
+        default: []
     },
     refreshtoken: {
         type: String,
