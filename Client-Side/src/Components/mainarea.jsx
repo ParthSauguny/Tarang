@@ -62,6 +62,7 @@ function Mainarea() {
       <h1 className="text-center text-7xl font-semibold font-serif py-4 text-violet-950">Tarang</h1>
       <div className="h-2/3 border-2 border-black rounded-lg m-4">
         {/* Placeholder for additional content or response display */}
+        {message}
       </div>
 
       <div className="mx-auto flex justify-center align-bottom">

@@ -5,7 +5,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/request':{
-        target: "http://localhost:8000/",
+        target: "http://localhost:5000/",
         changeOrigin: true,
       },
     }

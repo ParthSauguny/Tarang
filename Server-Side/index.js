@@ -3,13 +3,16 @@ const cors = require('cors');
 require('dotenv').config();
 const PORT = process.env.PORT || 5000;
 const mongo = require('mongoose');
+const DB_URL = process.env.db_Url;
+const user_R = require('./routes/user');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-mongo.connect(process.env.db_Url , () => console.log("connected at" , PORT));
+mongo.connect(DB_URL , console.log("connected database at" , PORT));
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use("/user" , user_R);
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
 
