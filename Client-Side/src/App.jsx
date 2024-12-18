@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import Sidebar from './Components/Side-bar'
 import './App.css'
 import Mainarea from './Components/mainarea'
