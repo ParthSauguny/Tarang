@@ -4,6 +4,7 @@ const auth = require('../middlewares/auth');
 
 const router = express.Router();
 
+
 router.post("/signup" , async(req , res) => {
     const {username , email , password} = req.body;
 

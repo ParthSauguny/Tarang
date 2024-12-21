@@ -2,22 +2,7 @@ const {Schema , model} = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-
-const chatMessageSchema = new Schema({
-    sender: {
-      type: String,
-      required: true,
-      enum: [userSchema.username, 'Tarang'], // Define if the sender is the user or the bot
-    },
-    message: {
-      type: String,
-      required: true,
-    },
-    timestamp: {
-      type: Date,
-      default: Date.now,
-    },
-  });
+const chatMessageSchema = require('./messages');
 
 const userSchema = new Schema({
     username: {
@@ -41,6 +26,7 @@ const userSchema = new Schema({
         type: String,
     }
 },{timestamps: true});
+
 
 userSchema.pre("save" , async (next) => {
     if(!this.isModified("password")) return next();

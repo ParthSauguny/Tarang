@@ -40,6 +40,10 @@ app.post("/request", async (req, res) => {
     }
 });
 
+app.get("/chat-history" , (req , res) => {
+    
+});
+
 app.listen(PORT, () => {
     console.log("Server started at port", PORT);
 });

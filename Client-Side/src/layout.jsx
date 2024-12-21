@@ -5,6 +5,7 @@ function Layout() {
   return (
     <>
       <Navbar/>
+      Welcome to Tarang.
       <Outlet/>
     </>
   )
