@@ -38,7 +38,7 @@ function Mainarea() {
   };
 
   return (
-    <div className=''>
+    <div className='flex flex-row'>
      <div className='bg-violet-950 flex flex-col h-screen w-1/5'>
         <button onClick={NewChat} className='mx-auto mt-4 border-4 border-slate-400 bg-black text-white rounded-2xl p-2 font-semibold font-serif'>+ New Chat</button>
         <div className='border-2 border-gray-300 text-center text-yellow-200 text-2xl mx-8 px-6 py-2 mt-4 h-screen overflow-y-scroll'>
