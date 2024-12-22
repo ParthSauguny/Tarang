@@ -5,9 +5,9 @@ import Login from './Login'
 
 function Homepage() {
   return (
-    <div>
-        <h1 className='text-center text-rose-300 text-4xl'>Welcome to the Chatbot</h1>
-        <h2 className='text-center text-rose-300 text-2xl'>Please Login or Signup to continue</h2>
+    <div className='flex flex-col items-center'>
+        <h1 className='text-center text-red-500 text-6xl font-black font-serif'>Welcome to the Chatbot</h1>
+        <h2 className='text-center text-red-500 text-4xl font-black font-serif'>Please Login or Signup to continue</h2>
 
         <Link to='/user/signup' element={<Signup/>}>
             <button className='rounded-2xl bg-black text-white p-2 font-semibold font-serif'>
