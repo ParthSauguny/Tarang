@@ -5,6 +5,8 @@ const PORT = process.env.PORT || 5000;
 const mongo = require('mongoose');
 const DB_URL = process.env.db_Url;
 const user_R = require('./routes/user');
+const auth = require('./middlewares/auth');
+const User = require('./models/user');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 mongo.connect(DB_URL , console.log("connected database at" , PORT));
@@ -16,7 +18,7 @@ app.use("/user" , user_R);
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
 
-app.post("/request", async (req, res) => {
+app.post("/request", auth , async (req, res) => {
     const { ques } = req.body;
     console.log(ques);
 
@@ -40,7 +42,7 @@ app.post("/request", async (req, res) => {
     }
 });
 
-app.get("/chat-history" , (req , res) => {
+app.get("/chat-history" , auth , (req , res) => {
     
 });
 
