@@ -7,8 +7,11 @@ const router = express.Router();
 
 router.post("/signup" , async(req , res) => {
     const {username , email , password} = req.body;
+    console.log(username , email , password);
+    const userfound = await User.findOne({username: username , email: email});
+    console.log(userfound);
 
-    if(User.findOne({username: username , email: email})){
+    if(userfound){
         return res.status(400).json({message: "account already exists"});
     }
     try {
@@ -28,9 +31,16 @@ router.post("/signup" , async(req , res) => {
 router.post("/login" , auth , async(req , res) => {
     const {email , password} = req.body;
 
-    if(!User.isCorrectPassword(password)){
-        return res.status(400).json({message: "wrong password entered"});
+    if(!email || !password){
+        return res.status(400).json({message: "Please enter all fields"});
     }
+
+    const validornot = await User.isCorrectPassword(password);
+    if(!validornot){
+        return res.status(402).json({message: "wrong password entered"});
+    }
+
+    User.createAccessToken()
 });
 
 module.exports = router;
