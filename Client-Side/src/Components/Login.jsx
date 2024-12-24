@@ -24,7 +24,7 @@ function Login() {
       });
 
       if(res.status === 200){
-        navigate('/');
+        navigate('/dashboard');
         toast.success("logged in successfully !!!!!");
       }
     } catch (error) {

@@ -4,7 +4,7 @@ const User = require('../models/user');
 
 const auth = (req , res , next) => {
     try {
-        const token = req.cookie.AccessToken;
+        const token = req.cookie.accesstoken;
 
         if(!token){
             return res.status(400).json({message: "unauthorised access"});
@@ -12,7 +12,7 @@ const auth = (req , res , next) => {
 
         const decoded = jwt.verify(token , process.env.ACCESS_TOKEN_SECRET);
 
-        const user = User.findById(decoded?._id).select("-password -refreshtoken");
+        const user = User.findById(decoded?._id).select("-password -refreshToken");
 
         if(!user){
             return res.status(401).json({message: "user not found"});

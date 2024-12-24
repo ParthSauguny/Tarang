@@ -28,7 +28,9 @@ function Mainarea() {
       return;
     }
     try {
-      const response = await axios.post("http://localhost:5000/request" , {ques});
+      const response = await axios.post("http://localhost:5000/request" , {ques} , 
+        {withCredentials: true}
+      );
       setMessage(response.data);
       setQues("");
     } catch (error) {
