@@ -1,4 +1,4 @@
-const {Schema , model} = require('mongoose');
+const { Schema } = require('mongoose');
 const userSchema = require('./user');
 
 const chatMessageSchema = new Schema({
@@ -6,6 +6,10 @@ const chatMessageSchema = new Schema({
     type: String,
     required: true,
     enum: [userSchema.username, 'Tarang'], // Define if the sender is the user or the bot
+  },
+  question: {
+    type: String,
+    required: true,
   },
   message: {
     type: String,

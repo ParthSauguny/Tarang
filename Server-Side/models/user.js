@@ -43,7 +43,6 @@ userSchema.methods.createAccessToken = () => {
     return jwt.sign({
         _id: this._id,
         username: this.username,
-        email: this.email
     } , process.env.ACCESS_TOKEN_SECRET ,
     {
         expiresIn: process.env.ACCESS_TOKEN_EXPIRY
