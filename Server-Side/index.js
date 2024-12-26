@@ -9,7 +9,6 @@ const auth = require('./middlewares/auth');
 const User = require('./models/user');
 const cookieParser = require('cookie-parser');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const messSchema = require('./models/messages');
 
 mongo.connect(DB_URL , console.log("connected database at" , PORT));
 const corsOptions = {
@@ -42,11 +41,11 @@ app.post("/request", auth , async (req, res) => {
         const textAns = await result.response.text();
 
         const user = await User.findById(req.user._id);
-        console.log(user);
-        const history = messSchema.add({sender : user.username , question: ques , message : textAns});
+        //console.log(user);
+        const message = { sender: user.username, question: ques, message: textAns };
+        user.chatHistory.push(message);
+        await user.save();
 
-        user.ChatHistory.push(history);
-        
         res.send(textAns);
     } catch (error) {
         console.error("Error during chat processing:", error);
@@ -56,7 +55,8 @@ app.post("/request", auth , async (req, res) => {
 
 app.get("/chat-history" , auth , async (req , res) => {
     const user = await User.findById(req.user._id);
-    res.send(user.ChatHistory);
+    const his = user.chatHistory
+    res.send(his);
 });
 
 app.listen(PORT, () => {

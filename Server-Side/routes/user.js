@@ -7,9 +7,9 @@ const router = express.Router();
 
 router.post("/signup" , async(req , res) => {
     const {username , email , password} = req.body;
-    console.log(username , email , password);
+    //console.log(username , email , password);
     const userfound = await User.findOne({username: username , email: email});
-    console.log(userfound);
+    //console.log(userfound);
 
     if(userfound){
         return res.status(400).json({message: "account already exists"});
@@ -37,6 +37,7 @@ router.post("/login" , async(req , res) => {
 
     try {
         const founduser = await User.findOne({email});
+        //console.log(founduser);
         if(!founduser){
             return res.status(401).json({message: "User not found"});
         }
@@ -45,10 +46,11 @@ router.post("/login" , async(req , res) => {
         if(!validornot){
             return res.status(401).json({message: "wrong password entered"});
         }
-        const refreshToken = founduser.createRefreshToken();
-        const accessToken = founduser.createAccessToken();
+        const refreshToken = await founduser.createRefreshToken();
+        const accessToken = await founduser.createAccessToken();
 
-        founduser.refreshToken = refreshToken;
+        founduser.refreshtoken = refreshToken;
+        // console.log(founduser);
 
         await founduser.save({validateBeforeSave: false});
 

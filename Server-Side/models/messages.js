@@ -5,7 +5,6 @@ const chatMessageSchema = new Schema({
   sender: {
     type: String,
     required: true,
-    enum: [userSchema.username, 'Tarang'], // Define if the sender is the user or the bot
   },
   question: {
     type: String,
