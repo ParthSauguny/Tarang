@@ -40,12 +40,12 @@ function Login() {
   }
 
   return (
-  //<div className="flex justify-center items-center h-screen rounded-lg mx-5 bg-gray-900">
-  <div className="w-full max-w-md p-8 mx-auto bg-slate-600 shadow-lg rounded-xl my-16">
-    <h1 className="text-center text-5xl font-bold text-gray-900 mb-6">Login</h1>
+  <div className="flex justify-center items-center h-screen bg-gradient-to-tl from-sky-900 via-purple-900 to-gray-800">
+  <div className="w-full max-w-md p-8 mx-auto bg-blue-900 shadow-lg rounded-xl my-16">
+    <h1 className="text-center text-5xl font-bold text-pink-700 mb-6">Login</h1>
     <form action="" method="post" className="space-y-6">
       <div className="flex flex-col space-y-2">
-        <label className="text-lg font-medium text-sky-900">Enter your email</label>
+        <label className="text-lg font-medium text-red-400">Enter your email</label>
         <input
           type="email"
           placeholder="enter email"
@@ -57,7 +57,7 @@ function Login() {
       </div>
 
       <div className="flex flex-col space-y-2">
-        <label className="text-lg font-medium text-sky-900">Enter your password</label>
+        <label className="text-lg font-medium text-red-400">Enter your password</label>
         <input
           type="password"
           placeholder="enter password"
@@ -81,12 +81,12 @@ function Login() {
 
     <h1 className="text-center mt-6">
       New User?{" "}
-      <Link className="text-blue-600 hover:underline" to="/user/signup">
+      <Link className="text-red-300 hover:underline" to="/user/signup">
         Register here
       </Link>
     </h1>
   </div>
-  //</div>
+  </div>
   )
 }
 

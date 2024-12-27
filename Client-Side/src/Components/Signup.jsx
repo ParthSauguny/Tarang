@@ -45,11 +45,12 @@ function Signup() {
   }
 
   return (
-  <div className="w-full max-w-md p-8 mx-auto bg-slate-600 shadow-lg rounded-xl my-2.5">
-    <h1 className="text-center text-5xl font-bold text-gray-900 mb-6">Sign Up</h1>
+  <div className='flex flex-col justify-center min-h-screen bg-gradient-to-br from-black via-purple-800 to-blue-900'>
+    <div className="w-full max-w-md p-8 mx-auto bg-blue-900 shadow-lg rounded-xl">
+    <h1 className="text-center text-5xl font-bold text-red-500 mb-6">Sign Up</h1>
     <form action="/" method="post" className="space-y-6">
       <div className="flex flex-col space-y-2">
-        <label className="text-lg font-medium text-sky-900">Enter your username</label>
+        <label className="text-lg font-medium text-red-400">Enter your username</label>
         <input
           type="text"
           onChange={changeHandler}
@@ -60,7 +61,7 @@ function Signup() {
       </div>
 
       <div className="flex flex-col space-y-2">
-        <label className="text-lg font-medium text-sky-900">Enter your email</label>
+        <label className="text-lg font-medium text-red-400">Enter your email</label>
         <input
           type="email"
           onChange={changeHandler}
@@ -71,7 +72,7 @@ function Signup() {
       </div>
 
       <div className="flex flex-col space-y-2">
-        <label className="text-lg font-medium text-sky-900">Enter your password</label>
+        <label className="text-lg font-medium text-red-400">Enter your password</label>
         <input
           type="password"
           onChange={changeHandler}
@@ -91,14 +92,14 @@ function Signup() {
       </div>
     </form>
 
-    <h1 className="text-center mt-6">
+    <h1 className="text-center mt-6 text-white">
       Already have an Account?{" "}{" "}
-      <Link className="text-blue-600 hover:underline" to="/user/login">
+      <Link className="text-red-400 hover:underline" to="/user/login">
         Click to login
       </Link>
     </h1>
   </div>
-
+  </div>
   )
 }
 

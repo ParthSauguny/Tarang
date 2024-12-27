@@ -5,11 +5,11 @@ import Login from './Login';
 
 function Homepage() {
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gradient-to-br from-violet-900 via-black to-gray-900 text-white">
+    <div className="flex flex-col items-center min-h-screen bg-gradient-to-br from-violet-900 via-blue-800 to-gray-900 text-white">
       {/* Welcome Section */}
       <div className="text-center mt-32 space-y-6">
         <h1 className="text-6xl font-black font-serif text-yellow-400 drop-shadow-lg transition-transform duration-300 hover:scale-105">
-          Welcome to TARANG
+          Welcome to TARANG - the AI Chatbot
         </h1>
         <h2 className="text-3xl font-medium text-yellow-200">
           Please Login or Signup to continue
