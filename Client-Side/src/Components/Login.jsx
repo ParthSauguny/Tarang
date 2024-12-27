@@ -41,7 +41,7 @@ function Login() {
 
   return (
   //<div className="flex justify-center items-center h-screen rounded-lg mx-5 bg-gray-900">
-  <div className="w-full max-w-md p-8 mx-auto bg-slate-400 shadow-lg rounded-xl my-16">
+  <div className="w-full max-w-md p-8 mx-auto bg-slate-600 shadow-lg rounded-xl my-16">
     <h1 className="text-center text-5xl font-bold text-gray-900 mb-6">Login</h1>
     <form action="" method="post" className="space-y-6">
       <div className="flex flex-col space-y-2">

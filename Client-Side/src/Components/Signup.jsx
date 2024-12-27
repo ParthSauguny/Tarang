@@ -45,7 +45,7 @@ function Signup() {
   }
 
   return (
-  <div className="w-full max-w-md p-8 mx-auto bg-slate-400 shadow-lg rounded-xl my-2.5">
+  <div className="w-full max-w-md p-8 mx-auto bg-slate-600 shadow-lg rounded-xl my-2.5">
     <h1 className="text-center text-5xl font-bold text-gray-900 mb-6">Sign Up</h1>
     <form action="/" method="post" className="space-y-6">
       <div className="flex flex-col space-y-2">

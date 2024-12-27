@@ -1,49 +1,50 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; // Import the useNavigate hook
+import { useNavigate } from "react-router-dom";
 
 function Mainarea() {
   const [ques, setQues] = useState("");
+  const [prevQues, setPrevQues] = useState("");
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [ChatHistory, setChatHistory] = useState([]);
-  const navigate = useNavigate(); // Hook to programmatically navigate
+  const [sender , setSender] = useState("");
+  const navigate = useNavigate();
 
-  // Function to clear chat and start a new one
   function NewChat() {
     setMessage("");
     setQues("");
+    setPrevQues("");
   }
 
-  // Fetch chat history when the component mounts
   useEffect(() => {
     axios
       .get("http://localhost:5000/chat-history", { withCredentials: true })
       .then((resp) => {
         setChatHistory(resp.data);
-        console.log(resp);
-        console.log(ChatHistory); // Update chat history state with fetched data
+        console.log(resp.data);
+        setError("");
       })
       .catch((err) => {
-        if (err.response && err.response.status === 401) {
-          // Session expired or user is not authenticated
-          setError("Session expired. Please log in again.");
-          // Redirect to login page
+        if (err.response?.status === 401) {
+          setError("Session expired. Redirecting to login...");
           setTimeout(() => {
-            navigate("/login");
-          }, 2000); // Wait for 2 seconds before redirecting
+            navigate("/user/login"); // Update this route as necessary
+          }, 2000); // Delay for user feedback
         } else {
-          setError("Failed to fetch chat history. Please try again later.");
+          setError("Failed to fetch chat history.");
         }
       });
-  }, [navigate]); // Dependency array to make sure navigate is available
+  }, [navigate]);
 
-  // Handle changes in the input field
-  const handleChange = (e) => {
-    setQues(e.target.value);
-  };
+  const handleChange = (e) => setQues(e.target.value);
 
-  // Handle sending a new message
+  function openChat(question , answer , sender) {
+    setMessage(answer);
+    setSender(sender);
+    setPrevQues(question);
+  }
+
   const getResponse = async () => {
     if (ques.trim().length === 0) {
       setError("Please ask a question!");
@@ -55,19 +56,16 @@ function Mainarea() {
         { ques },
         { withCredentials: true }
       );
-      // Append new message to the chat history
-      const newMessage = { sender: "You", question: ques, response: response.data };
-      setChatHistory((prevHistory) => [...prevHistory, newMessage]); // Add new message to chat history
       setMessage(response.data);
-      setQues(""); // Clear input field
-      setError(""); // Clear error if successful
+      setPrevQues(ques);
+      setQues("");
+      setError("");
     } catch (err) {
-      console.error(err);
-      if (err.response && err.response.status === 401) {
-        setError("Session expired. Please log in again.");
+      if (err.response?.status === 401) {
+        setError("Session expired. Redirecting to login...");
         setTimeout(() => {
           navigate("/user/login");
-        }, 2000); // Redirect to login after 2 seconds
+        }, 2000);
       } else {
         setError("Something went wrong! Please try again later.");
       }
@@ -82,9 +80,9 @@ function Mainarea() {
           onClick={NewChat}
           className="mx-auto mt-4 border-4 border-slate-400 bg-black text-white rounded-2xl p-2 font-semibold font-serif"
         >
-          + New Chat
+          + New Chat +
         </button>
-        <div className="border-2 border-gray-300 text-center text-yellow-200 text-lg mx-8 px-4 py-2 mt-4 h-5/6 overflow-y-auto">
+        <div className="border-2 flex justify-around border-gray-300 text-yellow-200 text-lg mx-8 px-4 py-2 mt-4 h-5/6 overflow-y-auto">
           {ChatHistory.length === 0 ? (
             <p>No chat history available.</p>
           ) : (
@@ -94,13 +92,15 @@ function Mainarea() {
                   key={i}
                   className="border border-gray-400 text-yellow-200 text-left mx-auto px-4 py-2 mt-2 bg-gray-800 rounded-md"
                 >
-                  <strong>{item.question}</strong>
+                  <strong>Q:</strong> {item.question}
+                  <button onClick={() => openChat(item.question, item.message , item.sender)} className="border-2 bg-black text-white mx-2">+</button>
                 </li>
               ))}
             </ul>
           )}
         </div>
-        <h1 className="text-center text-rose-300 mt-4"> Made by Parth Sauguny </h1>
+        <h1 className="text-center text-white text-6xl">---------</h1>
+        <h1 className="text-center text-rose-300 mt-2"> Made by Parth Sauguny </h1>
       </div>
 
       {/* Main Area */}
@@ -109,10 +109,21 @@ function Mainarea() {
           Tarang
         </h1>
         <div className="h-3/4 border-2 border-black rounded-lg m-4 p-4 overflow-y-auto bg-gray-800 text-white text-lg">
-          {message ? (
-            <div>{message}</div>
+          {prevQues ? (
+              <div
+                className="border-b border-gray-600 mb-4 pb-4 text-left"
+              >
+                <p>
+                  <span className="font-bold text-blue-400">{sender}:</span>{" "}
+                  {prevQues}
+                </p>
+                <p>
+                  <span className="font-bold text-green-400">Tarang:</span>{" "}
+                  {message}
+                </p>
+              </div>
           ) : (
-            <p className="text-gray-400">Your response will appear here...</p>
+            <p className="text-center">Start a new chat!</p>
           )}
         </div>
         <div className="flex justify-center items-center mt-auto pb-6">
