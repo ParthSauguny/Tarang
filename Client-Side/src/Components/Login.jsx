@@ -19,7 +19,7 @@ function Login() {
   async function submitHandler(event){
     event.preventDefault();
     try {
-      const res = await axios.post("/user/login" , logindata, {
+      const res = await axios.post(`${import.meta.env.VITE_BACKEND_BASEURL}/user/login` , logindata, {
         withCredentials: true,  // Ensure cookies are sent with the request
       });
 

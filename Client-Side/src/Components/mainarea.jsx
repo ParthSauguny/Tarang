@@ -19,7 +19,7 @@ function Mainarea() {
 
   useEffect(() => {
     axios
-      .get("/chat-history", { withCredentials: true })
+      .get(`${import.meta.env.VITE_BACKEND_BASEURL}/chat-history`, { withCredentials: true })
       .then((resp) => {
         setChatHistory(resp.data);
         console.log(resp.data);
@@ -52,7 +52,7 @@ function Mainarea() {
     }
     try {
       const response = await axios.post(
-        "/request",
+        `${import.meta.env.VITE_BACKEND_BASEURL}/request`,
         { ques },
         { withCredentials: true }
       );
