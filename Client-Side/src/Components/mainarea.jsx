@@ -19,7 +19,7 @@ function Mainarea() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/chat-history", { withCredentials: true })
+      .get("/chat-history", { withCredentials: true })
       .then((resp) => {
         setChatHistory(resp.data);
         console.log(resp.data);
@@ -52,7 +52,7 @@ function Mainarea() {
     }
     try {
       const response = await axios.post(
-        "http://localhost:5000/request",
+        "/request",
         { ques },
         { withCredentials: true }
       );
