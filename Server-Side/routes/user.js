@@ -1,19 +1,18 @@
 const express = require('express');
 const User = require('../models/user');
-const auth = require('../middlewares/auth');
 
 const router = express.Router();
 
 
 router.post("/signup" , async(req , res) => {
     const {username , email , password} = req.body;
-    //console.log(username , email , password);
     const userfound = await User.findOne({username: username , email: email});
-    //console.log(userfound);
+    const usernameCheck = await User.findOne({username: username});
 
-    if(userfound){
-        return res.status(400).json({message: "account already exists"});
+    if((userfound || usernameCheck)){
+        return res.status(401).json({message: "account already exists"});
     }
+
     try {
         await User.create({
           username,
