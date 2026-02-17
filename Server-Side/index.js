@@ -24,32 +24,43 @@ app.use("/user" , user_R);
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
 
-app.post("/request", auth , async (req, res) => {
+// Define model once outside the route
+const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+
+app.post("/request", auth, async (req, res) => {
     const { ques } = req.body;
-    console.log(ques);
 
     try {
-        const model = await genAI.getGenerativeModel({ model: 'gemini-pro' });
+        // 1. Fetch user and prepare history for the AI
+        const user = await User.findById(req.user._id);
+        
+        // Map your DB history to the format Gemini expects: [{ role: 'user', parts: [{ text: '...' }] }]
+        const formattedHistory = user.chatHistory.slice(-10).map(msg => ([
+            { role: "user", parts: [{ text: msg.question }] },
+            { role: "model", parts: [{ text: msg.message }] }
+        ])).flat();
 
-        // Start chat with an empty history array to test functionality
-        const chatSession = await model.startChat({
-            history: []
+        // 2. Start session with actual history
+        const chatSession = model.startChat({
+            history: formattedHistory,
         });
 
-        // Send the user's question
+        // 3. Get AI Response
         const result = await chatSession.sendMessage(ques);
-        const textAns = await result.response.text();
+        const textAns = result.response.text();
 
-        const user = await User.findById(req.user._id);
-        //console.log(user);
-        const message = { sender: user.username, question: ques, message: textAns };
-        user.chatHistory.push(message);
-        await user.save();
+        // 4. Update Database (Atomic push is faster for large histories)
+        const newMessage = { sender: user.username, question: ques, message: textAns };
+        
+        await User.findByIdAndUpdate(req.user._id, {
+            $push: { chatHistory: newMessage }
+        });
 
         res.send(textAns);
+
     } catch (error) {
-        console.error("Error during chat processing:", error);
-        res.status(500).send("Something went wrong with the AI response generation.");
+        console.error("Gemini Error:", error);
+        res.status(500).json({ error: "Failed to generate AI response." });
     }
 });
 

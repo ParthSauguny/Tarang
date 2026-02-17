@@ -28,7 +28,7 @@ function Signup() {
     e.preventDefault();
     console.log(`${import.meta.env.VITE_BACKEND_BASEURL}/user/signup`);
     try {
-      const response = await axios.post(`${import.meta.env.BACKEND_BASEURL}/user/signup`,
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_BASEURL}/user/signup`,
         signupData
       );
   

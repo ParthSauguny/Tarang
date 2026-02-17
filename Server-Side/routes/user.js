@@ -42,7 +42,7 @@ router.post("/login" , async(req , res) => {
         }
 
         const validornot = await founduser.isCorrectPassword(password);
-        if(!validornot){
+        if(validornot){
             return res.status(401).json({message: "wrong password entered"});
         }
         const refreshToken = await founduser.createRefreshToken();
