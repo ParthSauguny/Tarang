@@ -6,10 +6,14 @@ const router = express.Router();
 
 router.post("/signup" , async(req , res) => {
     const {username , email , password} = req.body;
-    const userfound = await User.findOne({username: username , email: email});
-    const usernameCheck = await User.findOne({username: username});
 
-    if((userfound || usernameCheck)){
+    if(!username || !email || !password){
+        return res.status(400).json({message: "Please enter all fields"});
+    }
+
+    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+
+    if(existingUser){
         return res.status(401).json({message: "account already exists"});
     }
 
@@ -42,7 +46,7 @@ router.post("/login" , async(req , res) => {
         }
 
         const validornot = await founduser.isCorrectPassword(password);
-        if(validornot){
+        if(!validornot){
             return res.status(401).json({message: "wrong password entered"});
         }
         const refreshToken = await founduser.createRefreshToken();

@@ -1,5 +1,4 @@
 const { Schema } = require('mongoose');
-const userSchema = require('./user');
 
 const chatMessageSchema = new Schema({
   sender: {

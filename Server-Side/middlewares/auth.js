@@ -4,7 +4,7 @@ const User = require('../models/user');
 
 const auth = async (req, res, next) => {
     try {
-        const token = req.cookies?.accesstoken || req.header("Authorisation")?.replace("Bearer" , "");
+        const token = req.cookies?.accesstoken || req.header("Authorization")?.replace("Bearer ", "");
         //console.log(req.cookies);
         //console.log(token);
 
@@ -20,7 +20,7 @@ const auth = async (req, res, next) => {
         }
 
         // Find the user in the database
-        const user = await User.findById(decoded?._id).select("-password -refreshToken");
+        const user = await User.findById(decoded?._id).select("-password -refreshtoken");
         if (!user) {
             return res.status(401).json({ message: "User not found" });
         }

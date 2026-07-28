@@ -1,151 +1,216 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Waveform from "./Waveform";
 
 function Mainarea() {
   const [ques, setQues] = useState("");
-  const [prevQues, setPrevQues] = useState("");
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
-  const [ChatHistory, setChatHistory] = useState([]);
-  const [sender , setSender] = useState("");
+  const [thread, setThread] = useState([]); // flat list of {role, text, sender?, id}
+  const [rawHistory, setRawHistory] = useState([]); // original chatHistory items, for sidebar
+  const [loading, setLoading] = useState(false);
+  const [historyLoading, setHistoryLoading] = useState(true);
   const navigate = useNavigate();
+  const bottomRef = useRef(null);
+  const messageRefs = useRef({});
+
+  function historyToThread(history) {
+    return history.flatMap((item, i) => ([
+      { role: "user", text: item.question, sender: item.sender, id: `u-${i}` },
+      { role: "assistant", text: item.message, id: `a-${i}` },
+    ]));
+  }
 
   function NewChat() {
-    setMessage("");
+    setThread([]);
     setQues("");
-    setPrevQues("");
+    setError("");
   }
 
   useEffect(() => {
     axios
       .get(`${import.meta.env.VITE_BACKEND_BASEURL}/chat-history`, { withCredentials: true })
       .then((resp) => {
-        setChatHistory(resp.data);
-        console.log(resp.data);
+        setRawHistory(resp.data);
+        setThread(historyToThread(resp.data));
         setError("");
       })
       .catch((err) => {
         if (err.response?.status === 401) {
           setError("Session expired. Redirecting to login...");
-          setTimeout(() => {
-            navigate("/user/login"); // Update this route as necessary
-          }, 2000); // Delay for user feedback
+          setTimeout(() => navigate("/user/login"), 2000);
         } else {
           setError("Failed to fetch chat history.");
         }
-      });
+      })
+      .finally(() => setHistoryLoading(false));
   }, [navigate]);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [thread, loading]);
 
   const handleChange = (e) => setQues(e.target.value);
 
-  function openChat(question , answer , sender) {
-    setMessage(answer);
-    setSender(sender);
-    setPrevQues(question);
+  function jumpToMessage(index) {
+    setThread(historyToThread(rawHistory));
+
+    setTimeout(() => {
+      messageRefs.current[`u-${index}`]?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }, 0);
   }
 
-  const getResponse = async () => {
+  const getResponse = async (e) => {
+    e?.preventDefault();
     if (ques.trim().length === 0) {
       setError("Please ask a question!");
       return;
     }
+    const question = ques;
+    setThread((prev) => [...prev, { role: "user", text: question, id: `pending-u-${Date.now()}` }]);
+    setQues("");
+    setError("");
+    setLoading(true);
+
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_BASEURL}/request`,
-        { ques },
+        { ques: question },
         { withCredentials: true }
       );
-      setMessage(response.data);
-      setPrevQues(ques);
-      setQues("");
-      setError("");
+      setThread((prev) => [...prev, { role: "assistant", text: response.data, id: `pending-a-${Date.now()}` }]);
+      setRawHistory((prev) => [...prev, { question, message: response.data, sender: "you" }]);
     } catch (err) {
       if (err.response?.status === 401) {
         setError("Session expired. Redirecting to login...");
-        setTimeout(() => {
-          navigate("/user/login");
-        }, 2000);
+        setTimeout(() => navigate("/user/login"), 2000);
       } else {
         setError("Something went wrong! Please try again later.");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-row h-screen">
+    <div className="flex flex-row h-screen bg-ocean-bg font-sans">
       {/* Sidebar */}
-      <div className="bg-violet-950 flex flex-col h-full w-1/5">
-        <button
-          onClick={NewChat}
-          className="mx-auto mt-4 border-4 border-slate-400 bg-black text-white rounded-2xl p-2 font-semibold font-serif"
-        >
-          + New Chat +
-        </button>
-        <div className="border-2 flex justify-around border-gray-300 text-yellow-200 text-lg mx-8 px-4 py-2 mt-4 h-5/6 overflow-y-auto">
-          {ChatHistory.length === 0 ? (
-            <p>No chat history available.</p>
-          ) : (
-            <ul>
-              {ChatHistory.map((item, i) => (
-                <li
-                  key={i}
-                  className="border border-gray-400 text-yellow-200 text-left mx-auto px-4 py-2 mt-2 bg-gray-800 rounded-md"
-                >
-                  <strong>Q:</strong> {item.question}
-                  <button onClick={() => openChat(item.question, item.message , item.sender)} className="border-2 bg-black text-white mx-2">+</button>
-                </li>
-              ))}
-            </ul>
-          )}
+      <aside className="bg-ocean-surface border-r border-ocean-border flex flex-col h-full w-72 shrink-0">
+        <div className="flex items-center gap-2 px-5 pt-6 pb-4">
+          <Waveform size="sm" />
+          <span className="font-display text-xl text-foam tracking-wide">Tarang</span>
         </div>
-        <h1 className="text-center text-white text-6xl">---------</h1>
-        <h1 className="text-center text-rose-300 mt-2"> Made by Parth Sauguny </h1>
-      </div>
 
-      {/* Main Area */}
-      <div className="bg-slate-500 w-4/5 flex flex-col">
-        <h1 className="text-center text-6xl font-semibold font-serif py-4 text-violet-950">
-          Tarang
-        </h1>
-        <div className="h-3/4 border-2 border-black rounded-lg m-4 p-4 overflow-y-auto bg-gray-800 text-white text-lg">
-          {prevQues ? (
-              <div
-                className="border-b border-gray-600 mb-4 pb-4 text-left"
-              >
-                <p>
-                  <span className="font-bold text-blue-400">{sender}:</span>{" "}
-                  {prevQues}
-                </p>
-                <p>
-                  <span className="font-bold text-green-400">Tarang:</span>{" "}
-                  {message}
-                </p>
-              </div>
-          ) : (
-            <p className="text-center">Start a new chat!</p>
-          )}
-        </div>
-        <div className="flex justify-center items-center mt-auto pb-6">
-          <input
-            id="chat-input"
-            aria-label="Chat input"
-            name="message"
-            value={ques}
-            onChange={handleChange}
-            className="w-3/5 border-2 outline-none border-black rounded-2xl text-xl px-4 py-2"
-            type="text"
-            placeholder="Type your message here..."
-          />
+        <div className="px-4">
           <button
-            onClick={getResponse}
-            className="ml-4 px-6 py-2 rounded-lg border-x-2 border-y-4 border-violet-800 hover:bg-violet-500 bg-violet-700 text-white font-semibold"
-            aria-label="Send message"
+            onClick={NewChat}
+            className="w-full rounded-full border border-ocean-border bg-ocean-surfaceAlt text-foam text-sm font-medium py-2.5 hover:border-wave-teal hover:text-wave-teal transition-colors"
           >
-            ➢
+            + New chat
           </button>
         </div>
-        {error && <h1 className="text-red-800 text-center mt-2">{error}</h1>}
+
+        <div className="mt-4 px-4 text-xs uppercase tracking-widest text-mist">History</div>
+        <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2">
+          {historyLoading ? (
+            <p className="text-mist text-sm px-1 py-2">Loading history…</p>
+          ) : rawHistory.length === 0 ? (
+            <p className="text-mist text-sm px-1 py-2">No chats yet. Ask something to get started.</p>
+          ) : (
+            rawHistory.map((item, i) => (
+              <button
+                key={i}
+                onClick={() => jumpToMessage(i)}
+                className="w-full text-left rounded-lg border border-ocean-border bg-ocean-bg/40 px-3 py-2 text-sm text-foam/90 hover:border-wave-teal/60 hover:bg-ocean-surfaceAlt transition-colors truncate"
+                title={item.question}
+              >
+                {item.question}
+              </button>
+            ))
+          )}
+        </div>
+
+        <div className="px-5 py-4 border-t border-ocean-border">
+          <p className="text-center text-xs text-mist">Made by Parth Sauguny</p>
+        </div>
+      </aside>
+
+      {/* Main Area */}
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="border-b border-ocean-border px-6 py-4">
+          <h1 className="font-display text-2xl text-foam tracking-wide">Tarang</h1>
+        </header>
+
+        <div className="flex-1 overflow-y-auto px-4 sm:px-0">
+          <div className="max-w-2xl mx-auto py-6 flex flex-col gap-4">
+            {thread.length === 0 && !historyLoading ? (
+              <div className="text-center text-mist mt-24">
+                <Waveform size="lg" className="justify-center mb-4" />
+                <p className="font-display text-lg text-foam/80">Start a new chat!</p>
+              </div>
+            ) : (
+              thread.map((msg) => (
+                <div
+                  key={msg.id}
+                  ref={(el) => { if (msg.role === "user") messageRefs.current[msg.id] = el; }}
+                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                >
+                  {msg.role === "assistant" && (
+                    <Waveform size="sm" className="mr-2 mt-3 shrink-0" />
+                  )}
+                  <div
+                    className={
+                      msg.role === "user"
+                        ? "bg-wave-gradient text-ocean-bg font-medium rounded-2xl rounded-br-sm px-4 py-2.5 max-w-[80%] whitespace-pre-wrap"
+                        : "bg-ocean-surfaceAlt text-foam rounded-2xl rounded-bl-sm px-4 py-2.5 max-w-[80%] whitespace-pre-wrap border border-ocean-border"
+                    }
+                  >
+                    {msg.text}
+                  </div>
+                </div>
+              ))
+            )}
+
+            {loading && (
+              <div className="flex justify-start">
+                <Waveform animated size="sm" className="mr-2 mt-3 shrink-0" />
+                <div className="bg-ocean-surfaceAlt border border-ocean-border rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-2">
+                  <Waveform animated size="md" />
+                  <span className="text-mist text-sm">Tarang is thinking…</span>
+                </div>
+              </div>
+            )}
+            <div ref={bottomRef} />
+          </div>
+        </div>
+
+        <form onSubmit={getResponse} className="border-t border-ocean-border px-4 py-4">
+          <div className="max-w-2xl mx-auto flex items-center gap-3">
+            <input
+              id="chat-input"
+              aria-label="Chat input"
+              name="message"
+              value={ques}
+              onChange={handleChange}
+              disabled={loading}
+              className="flex-1 bg-ocean-surface border border-ocean-border outline-none focus:border-wave-teal rounded-full text-foam placeholder-mist px-5 py-3 disabled:opacity-60"
+              type="text"
+              placeholder="Type your message here..."
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              className="shrink-0 w-11 h-11 flex items-center justify-center rounded-full bg-wave-gradient text-ocean-bg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+              aria-label="Send message"
+            >
+              ➢
+            </button>
+          </div>
+          {error && <p className="text-coral text-center text-sm mt-3 max-w-2xl mx-auto">{error}</p>}
+        </form>
       </div>
     </div>
   );

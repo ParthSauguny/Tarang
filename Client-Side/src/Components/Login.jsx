@@ -2,9 +2,11 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from "react-router-dom"
 import axios from "axios"
 import { toast } from 'react-toastify';
+import Waveform from './Waveform';
 
 function Login() {
   const [logindata,setLogindata] = useState({email:"" , password:""});
+  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
 
   function changehandler(event){
@@ -18,73 +20,79 @@ function Login() {
 
   async function submitHandler(event){
     event.preventDefault();
+    setSubmitting(true);
     try {
       const res = await axios.post(`${import.meta.env.VITE_BACKEND_BASEURL}/user/login` , logindata, {
-        withCredentials: true,  // Ensure cookies are sent with the request
+        withCredentials: true,
       });
 
       if(res.status === 200){
+        toast.success("Logged in successfully");
         navigate('/dashboard');
-        toast.success("logged in successfully !!!!!");
       }
     } catch (error) {
       if (error.response && error.response.status === 400) {
         toast.warning("Please fill all details");
       }
       else if(error.response && error.response.status === 401){
-        toast.warning("Invalid Credentials");
+        toast.warning("Invalid credentials");
       }else {
         toast.error("Something went wrong, please try again!");
       }
+    } finally {
+      setSubmitting(false);
     }
   }
 
   return (
-  <div className="flex justify-center items-center h-screen bg-gradient-to-tl from-sky-900 via-purple-900 to-gray-800">
-  <div className="w-full max-w-md p-8 mx-auto bg-blue-900 shadow-lg rounded-xl my-16">
-    <h1 className="text-center text-5xl font-bold text-pink-700 mb-6">Login</h1>
-    <form action="" method="post" className="space-y-6">
+  <div className="flex justify-center items-center min-h-screen bg-ocean-bg px-4">
+  <div className="w-full max-w-md p-8 bg-ocean-surface border border-ocean-border shadow-2xl rounded-2xl">
+    <div className="flex justify-center mb-4">
+      <Waveform size="sm" />
+    </div>
+    <h1 className="text-center font-display text-4xl text-foam mb-8">Log in</h1>
+    <form onSubmit={submitHandler} className="space-y-5">
       <div className="flex flex-col space-y-2">
-        <label className="text-lg font-medium text-red-400">Enter your email</label>
+        <label className="text-sm font-medium text-mist">Email</label>
         <input
           type="email"
-          placeholder="enter email"
+          placeholder="you@example.com"
           name="email"
           onChange={changehandler}
           value={logindata.email}
-          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full p-3 bg-ocean-bg border border-ocean-border rounded-lg text-foam placeholder-mist focus:outline-none focus:border-wave-teal transition-colors"
         />
       </div>
 
       <div className="flex flex-col space-y-2">
-        <label className="text-lg font-medium text-red-400">Enter your password</label>
+        <label className="text-sm font-medium text-mist">Password</label>
         <input
           type="password"
-          placeholder="enter password"
+          placeholder="••••••••"
           name="password"
           onChange={changehandler}
           value={logindata.password}
-          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full p-3 bg-ocean-bg border border-ocean-border rounded-lg text-foam placeholder-mist focus:outline-none focus:border-wave-teal transition-colors"
         />
       </div>
 
       <div>
         <button
           type="submit"
-          onClick={submitHandler}
-          className="w-full py-3 bg-black text-white border-2 border-black rounded-xl transition-colors duration-200 hover:bg-slate-100 hover:text-black hover:border-black"
+          disabled={submitting}
+          className="w-full py-3 bg-wave-gradient text-ocean-bg font-semibold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-60"
         >
-          Login
+          {submitting ? "Logging in…" : "Log in"}
         </button>
       </div>
     </form>
 
-    <h1 className="text-center mt-6">
-      New User?{" "}
-      <Link className="text-red-300 hover:underline" to="/user/signup">
-        Register here
+    <p className="text-center mt-6 text-mist text-sm">
+      New here?{" "}
+      <Link className="text-wave-teal hover:underline" to="/user/signup">
+        Create an account
       </Link>
-    </h1>
+    </p>
   </div>
   </div>
   )

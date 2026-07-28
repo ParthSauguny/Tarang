@@ -10,10 +10,13 @@ const User = require('./models/user');
 const cookieParser = require('cookie-parser');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-mongo.connect(DB_URL , console.log("connected database at" , PORT));
+mongo.connect(DB_URL)
+    .then(() => console.log("Connected to database, server running on port", PORT))
+    .catch((err) => console.error("Database connection error:", err));
+
 const corsOptions = {
-    origin: 'http://localhost:5173', // Specify the exact origin
-    credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+    origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
+    credentials: true,
 };
 
 const app = express();
@@ -24,7 +27,7 @@ app.use("/user" , user_R);
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
 
-// Define model once outside the route
+// Define model
 const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
 app.post("/request", auth, async (req, res) => {
