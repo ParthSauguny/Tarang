@@ -3,7 +3,6 @@ const User = require('../models/user');
 
 const router = express.Router();
 
-
 router.post("/signup" , async(req , res) => {
     const {username , email , password} = req.body;
 
@@ -59,7 +58,8 @@ router.post("/login" , async(req , res) => {
 
         const options = {
             httpOnly: true,
-            secure: true
+            secure: true,
+            sameSite: "none",
         };
 
         return res.status(200).cookie("accesstoken" , accessToken , options).cookie("refreshtoken" , refreshToken , options).json({ message: "Login successful" });
