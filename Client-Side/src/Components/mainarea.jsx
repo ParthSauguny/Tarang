@@ -29,7 +29,7 @@ function Mainarea() {
 
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BACKEND_BASEURL}/chat-history`, { withCredentials: true })
+      .get(`${import.meta.env.VITE_BACKEND_BASEURL}/conversations/chat-history`, { withCredentials: true })
       .then((resp) => {
         setRawHistory(resp.data);
         setThread(historyToThread(resp.data));
@@ -77,7 +77,7 @@ function Mainarea() {
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_BASEURL}/request`,
+        `${import.meta.env.VITE_BACKEND_BASEURL}/conversations/request`,
         { ques: question },
         { withCredentials: true }
       );
